@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>360 Advantage — Free Payroll Savings Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:       #08111F;
+    --navy-mid:   #0D1A2D;
+    --navy-light: #152238;
+    --gold:       #C9A84C;
+    --gold-light: #E2C47A;
+    --gold-dim:   rgba(201,168,76,0.12);
+    --gold-glow:  rgba(201,168,76,0.25);
+    --teal:       #1BABB0;
+    --teal-dim:   rgba(27,171,176,0.10);
+    --white:      #FFFFFF;
+    --text:       #E8EDF5;
+    --soft:       #A3B0C8;
+    --muted:      #5A6D87;
+    --border:     rgba(255,255,255,0.07);
+    --card-bg:    rgba(255,255,255,0.04);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ────────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ───────────────────────────────────────────────────── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(8,17,31,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+
+  .nav-badge {
+    width: 36px; height: 36px;
+    background: var(--gold);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    color: var(--navy);
+    letter-spacing: 1px;
+  }
+
+  .nav-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: var(--white);
+  }
+
+  .nav-brand span { color: var(--gold); }
+
+  .nav-cta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--navy);
+    background: var(--gold);
+    padding: 10px 22px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+    font-weight: 500;
+  }
+
+  .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  /* ── HERO ──────────────────────────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 120px 48px 80px;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 65% 50%, rgba(201,168,76,0.07) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 50% at 10% 80%, rgba(27,171,176,0.05) 0%, transparent 55%),
+      linear-gradient(180deg, var(--navy) 0%, var(--navy-mid) 100%);
+    z-index: 0;
+  }
+
+  /* Animated grid lines */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.1s;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 6vw, 88px);
+    line-height: 0.95;
+    letter-spacing: 2px;
+    color: var(--white);
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.2s;
+  }
+
+  .hero-title .gold { color: var(--gold); }
+  .hero-title .block { display: block; }
+
+  .hero-sub {
+    font-family: 'Lora', serif;
+    font-size: 18px;
+    color: var(--soft);
+    line-height: 1.7;
+    margin-bottom: 40px;
+    max-width: 460px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.3s;
+  }
+
+  .hero-sub strong { color: var(--text); font-style: italic; }
+
+  .hero-cta-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.4s;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 18px 36px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+    width: fit-content;
+  }
+
+  .btn-primary:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(201,168,76,0.3);
+  }
+
+  .btn-primary .arrow {
+    transition: transform 0.2s;
+  }
+  .btn-primary:hover .arrow { transform: translateX(4px); }
+
+  .hero-trust {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .hero-trust .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--teal);
+    flex-shrink: 0;
+    animation: pulse 2s infinite;
+  }
+
+  /* ── CALCULATOR CARD ───────────────────────────────────────── */
+  .calc-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    backdrop-filter: blur(8px);
+    position: relative;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.5s;
+  }
+
+  .calc-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--teal));
+    border-radius: 16px 16px 0 0;
+  }
+
+  .calc-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .calc-input-wrap {
+    margin-bottom: 28px;
+  }
+
+  .calc-input-label {
+    font-size: 13px;
+    color: var(--soft);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .calc-input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 28px;
+    font-weight: 500;
+    padding: 14px 18px;
+    outline: none;
+    transition: border-color 0.2s;
+    -moz-appearance: textfield;
+  }
+
+  .calc-input::-webkit-outer-spin-button,
+  .calc-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .calc-input:focus { border-color: var(--gold); }
+
+  .calc-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--gold) 0%, rgba(255,255,255,0.1) 0%);
+    outline: none;
+    margin-top: 12px;
+    cursor: pointer;
+  }
+
+  .calc-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 3px solid var(--navy);
+    box-shadow: 0 0 0 2px var(--gold);
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+
+  .calc-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+  .calc-result {
+    background: linear-gradient(135deg, rgba(201,168,76,0.12), rgba(27,171,176,0.06));
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .calc-result-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 8px;
+  }
+
+  .calc-result-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    line-height: 1;
+    transition: all 0.3s ease;
+  }
+
+  .calc-result-sub {
+    font-size: 13px;
+    color: var(--soft);
+    margin-top: 6px;
+  }
+
+  .calc-result-sub span { color: var(--teal); font-weight: 600; }
+
+  .calc-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .calc-btn:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(201,168,76,0.3);
+  }
+
+  .calc-disclaimer {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+
+  /* ── STATS STRIP ───────────────────────────────────────────── */
+  .stats-strip {
+    background: var(--navy-light);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 48px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stats-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    text-align: center;
+  }
+
+  .stat-item .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    line-height: 1;
+    display: block;
+  }
+
+  .stat-item .stat-label {
+    font-size: 14px;
+    color: var(--soft);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  .stat-divider {
+    width: 1px;
+    background: var(--border);
+    display: none;
+  }
+
+  /* ── HOW IT WORKS ──────────────────────────────────────────── */
+  .section {
+    padding: 100px 48px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 5vw, 60px);
+    letter-spacing: 2px;
+    color: var(--white);
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+
+  .section-sub {
+    font-family: 'Lora', serif;
+    font-size: 17px;
+    color: var(--soft);
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 60px;
+  }
+
+  /* Steps */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .step-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    position: relative;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .step-card:hover {
+    border-color: rgba(201,168,76,0.4);
+    transform: translateY(-4px);
+  }
+
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    letter-spacing: 2px;
+    color: rgba(201,168,76,0.15);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .step-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+
+  .step-body {
+    font-size: 14px;
+    color: var(--soft);
+    line-height: 1.6;
+  }
+
+  .step-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-top: 16px;
+  }
+
+  .step-tag.gold { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+  .step-tag.teal { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(27,171,176,0.3); }
+
+  /* ── WHAT YOU KEEP ─────────────────────────────────────────── */
+  .keeps-section {
+    background: var(--navy-mid);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .keeps-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .keeps-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .keeps-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .keeps-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .keeps-icon {
+    width: 36px; height: 36px;
+    background: var(--gold-dim);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .keeps-item-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .keeps-item-body {
+    font-size: 14px;
+    color: var(--soft);
+    line-height: 1.5;
+  }
+
+  /* Compliance box */
+  .compliance-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    position: relative;
+  }
+
+  .compliance-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--teal), transparent);
+    border-radius: 16px 16px 0 0;
+  }
+
+  .compliance-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 20px;
+  }
+
+  .compliance-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 2px;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .compliance-body {
+    font-size: 14px;
+    color: var(--soft);
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .compliance-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(27,171,176,0.3);
+    color: var(--teal);
+    background: var(--teal-dim);
+  }
+
+  /* ── CTA SECTION ───────────────────────────────────────────── */
+  .cta-section {
+    padding: 120px 48px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .cta-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,168,76,0.08) 0%, transparent 70%);
+    z-index: 0;
+  }
+
+  .cta-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .cta-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 6vw, 72px);
+    letter-spacing: 2px;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+
+  .cta-title .gold { color: var(--gold); }
+
+  .cta-body {
+    font-family: 'Lora', serif;
+    font-size: 18px;
+    color: var(--soft);
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    padding: 20px 44px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+  }
+
+  .cta-btn:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 50px rgba(201,168,76,0.35);
+  }
+
+  .cta-note {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* ── FOOTER ────────────────────────────────────────────────── */
+  footer {
+    background: var(--navy-mid);
+    border-top: 1px solid var(--border);
+    padding: 40px 48px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+  }
+
+  .footer-links a {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--soft); }
+
+  .footer-disclaimer {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+  }
+
+  /* ── ANIMATIONS ────────────────────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .hero { padding: 100px 24px 60px; }
+    .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+    .hero-title { font-size: 56px; }
+    .stats-inner { grid-template-columns: 1fr; gap: 32px; }
+    .section { padding: 60px 24px; }
+    .steps { grid-template-columns: 1fr; }
+    .keeps-grid { grid-template-columns: 1fr; gap: 40px; }
+    .cta-section { padding: 80px 24px; }
+    footer { padding: 32px 24px; }
+    .footer-top { flex-direction: column; gap: 16px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-badge">360</div>
+    <span class="nav-brand">360 <span>Advantage</span></span>
+  </a>
+  <a href="https://calendly.com/ryan-360advantagesavings/15min" class="nav-cta" target="_blank">Book Free Analysis</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <p class="hero-eyebrow">IRS Section 213(d) · Bolt-On Solution · Zero System Changes</p>
+      <h1 class="hero-title">
+        <span class="block">Your Payroll</span>
+        <span class="block">Is Leaving</span>
+        <span class="block gold">Money Behind.</span>
+      </h1>
+      <p class="hero-sub">
+        Most companies with 100–2,000 employees are overpaying in payroll taxes —
+        <strong>not because they're doing anything wrong,</strong> but because these savings
+        exist outside the scope of what standard payroll processing is built to catch.
+      </p>
+      <div class="hero-cta-group">
+        <a href="https://calendly.com/ryan-360advantagesavings/15min" class="btn-primary" target="_blank">
+          Get My Free Savings Analysis
+          <span class="arrow">→</span>
+        </a>
+        <div class="hero-trust">
+          <div class="dot"></div>
+          No obligation · No system changes · Results in 15 minutes
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE CALCULATOR -->
+    <div class="calc-card">
+      <p class="calc-label">Savings Estimator</p>
+      <div class="calc-input-wrap">
+        <span class="calc-input-label">Full-time employees</span>
+        <input type="number" class="calc-input" id="empInput" value="250" min="100" max="2000">
+        <input type="range" class="calc-slider" id="empSlider" min="100" max="2000" value="250">
+      </div>
+      <div class="calc-result">
+        <div class="calc-result-label">Estimated Annual Savings</div>
+        <div class="calc-result-number" id="savingsNum">$155,750</div>
+        <div class="calc-result-sub">
+          That's <span id="perPaycheck">~$5,990</span> back every bi-weekly payroll cycle
+        </div>
+      </div>
+      <button class="calc-btn" onclick="window.open('https://calendly.com/ryan-360advantagesavings/15min','_blank')">
+        Book My Free Analysis Call →
+      </button>
+      <p class="calc-disclaimer">Based on $623/employee average annual savings. Actual results vary. See disclaimer below.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-item reveal">
+      <span class="stat-num">$623</span>
+      <div class="stat-label">Average annual savings<br>per employee</div>
+    </div>
+    <div class="stat-item reveal">
+      <span class="stat-num">15 min</span>
+      <div class="stat-label">To see your company's<br>custom savings estimate</div>
+    </div>
+    <div class="stat-item reveal">
+      <span class="stat-num">0</span>
+      <div class="stat-label">Changes to your existing<br>payroll system required</div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="section-inner">
+    <span class="section-tag reveal">How It Works</span>
+    <h2 class="section-title reveal">Simple. Compliant. Immediate.</h2>
+    <p class="section-sub reveal">We bolt onto your existing payroll setup — no migration, no disruption, no new vendors to manage.</p>
+    <div class="steps">
+      <div class="step-card reveal">
+        <div class="step-num">01</div>
+        <div class="step-title">15-Minute Analysis Call</div>
+        <div class="step-body">We review your current payroll structure and employee count to calculate your specific savings opportunity. You'll see real numbers for your company before any commitment.</div>
+        <span class="step-tag gold">Free · No Obligation</span>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num">02</div>
+        <div class="step-title">We Handle Everything</div>
+        <div class="step-body">If you move forward, 360 Advantage manages all documents, enrollment, and administration. Your payroll team keeps doing exactly what they're doing today.</div>
+        <span class="step-tag teal">Zero Disruption</span>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num">03</div>
+        <div class="step-title">Savings Hit Next Payroll</div>
+        <div class="step-body">Your tax savings activate starting the next payroll cycle. Every pay period you delay is money left on the table — for your business and your employees.</div>
+        <span class="step-tag gold">Immediate ROI</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU KEEP -->
+<section class="section keeps-section">
+  <div class="section-inner">
+    <div class="keeps-grid">
+      <div>
+        <span class="section-tag reveal">What Changes. What Doesn't.</span>
+        <h2 class="section-title reveal">Your Setup Stays.<br><span style="color:var(--gold)">Your Tax Bill Drops.</span></h2>
+        <ul class="keeps-list">
+          <li class="keeps-item reveal">
+            <div class="keeps-icon">✓</div>
+            <div>
+              <div class="keeps-item-title">Keep Your Payroll Provider</div>
+              <div class="keeps-item-body">360 Advantage works alongside whatever payroll system you're already running — ADP, Paychex, Gusto, or anything else.</div>
+            </div>
+          </li>
+          <li class="keeps-item reveal">
+            <div class="keeps-icon">✓</div>
+            <div>
+              <div class="keeps-item-title">Keep Your HR Team's Workflow</div>
+              <div class="keeps-item-body">No new processes for your team to learn. We administer the program — you collect the savings.</div>
+            </div>
+          </li>
+          <li class="keeps-item reveal">
+            <div class="keeps-icon">✓</div>
+            <div>
+              <div class="keeps-item-title">Keep Your Current Benefits Structure</div>
+              <div class="keeps-item-body">This is additive, not a replacement. Your existing benefits stay exactly as they are.</div>
+            </div>
+          </li>
+          <li class="keeps-item reveal">
+            <div class="keeps-icon">✓</div>
+            <div>
+              <div class="keeps-item-title">Employees Keep More of Their Paycheck</div>
+              <div class="keeps-item-body">The average employee sees $1,400+ in additional annual take-home pay — a benefit that costs you nothing extra.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="compliance-box reveal">
+        <div class="compliance-label">100% Compliant</div>
+        <div class="compliance-title">Built on Solid Legal Ground</div>
+        <div class="compliance-body">
+          360 Advantage is built on IRS Section 213(d) — a well-established provision of the tax code that allows businesses to provide tax-free wellness benefits that reduce employer and employee FICA obligations.<br><br>
+          Every program is reviewed by CPAs and ERISA attorneys before implementation. We provide all required plan documents, administration, and ongoing compliance support.
+        </div>
+        <div class="compliance-pills">
+          <span class="pill">IRS Section 213(d)</span>
+          <span class="pill">ERISA Compliant</span>
+          <span class="pill">ACA Compliant</span>
+          <span class="pill">SIMRP Certified</span>
+          <span class="pill">CPA Reviewed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section">
+  <div class="cta-bg"></div>
+  <div class="cta-inner">
+    <h2 class="cta-title reveal">
+      See What <span class="gold">Your Company</span><br>Could Be Saving
+    </h2>
+    <p class="cta-body reveal">
+      A 15-minute call is all it takes to see your real numbers. No pressure, no commitment — just clarity on what your company is currently leaving on the table.
+    </p>
+    <a href="https://calendly.com/ryan-360advantagesavings/15min" class="cta-btn reveal" target="_blank">
+      Book My Free Analysis →
+    </a>
+    <p class="cta-note reveal"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dba9a2bab59be8edebbabfadbab5afbabcbea8baadb2b5bca8f5b8b4b6">[email&#160;protected]</a> · (208) 296-7771</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="nav-logo">
+        <div class="nav-badge">360</div>
+        <span class="nav-brand">360 <span>Advantage</span></span>
+      </div>
+      <div class="footer-links">
+        <a href="/cdn-cgi/l/email-protection#05777c646b45363335646173646b716462607664736c6b62762b666a68">Contact</a>
+        <a href="https://calendly.com/ryan-360advantagesavings/15min" target="_blank">Book a Call</a>
+      </div>
+    </div>
+    <p class="footer-disclaimer">
+      <strong>Disclaimer:</strong> The savings estimates provided on this page are for illustrative purposes only and are not guaranteed. Actual savings vary based on your company's specific circumstances, including size, structure, payroll composition, and plan design. This information does not constitute tax, legal, financial, or professional advice. Consult your CPA, tax advisor, or ERISA attorney before making any decisions regarding payroll tax strategies or benefits plan changes. 360 Advantage programs are designed to comply with IRS Section 213(d), ERISA, and ACA regulations; however, compliance is subject to proper implementation and ongoing administration. Past performance or estimated projections do not guarantee future results. By booking a call, you consent to being contacted by 360 Advantage regarding your savings estimate. Your information will not be sold or shared with third parties. © 2026 360 Advantage. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // ── CALCULATOR LOGIC ────────────────────────────────────────
+  const SAVINGS_PER_EMP = 623;
+  const empInput  = document.getElementById('empInput');
+  const empSlider = document.getElementById('empSlider');
+  const savingsEl = document.getElementById('savingsNum');
+  const perPayEl  = document.getElementById('perPaycheck');
+
+  function updateCalc(val) {
+    val = Math.max(100, Math.min(2000, parseInt(val) || 100));
+    const annual = val * SAVINGS_PER_EMP;
+    const biweekly = Math.round(annual / 26);
+    savingsEl.textContent = '$' + annual.toLocaleString();
+    perPayEl.textContent  = '~$' + biweekly.toLocaleString();
+
+    // Update slider gradient
+    const pct = ((val - 100) / (2000 - 100)) * 100;
+    empSlider.style.background = `linear-gradient(90deg, var(--gold) ${pct}%, rgba(255,255,255,0.1) ${pct}%)`;
+  }
+
+  empInput.addEventListener('input', e => {
+    empSlider.value = e.target.value;
+    updateCalc(e.target.value);
+  });
+
+  empSlider.addEventListener('input', e => {
+    empInput.value = e.target.value;
+    updateCalc(e.target.value);
+  });
+
+  // Init
+  updateCalc(250);
+
+  // ── SCROLL REVEAL ───────────────────────────────────────────
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+    
