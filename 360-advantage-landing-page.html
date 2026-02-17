@@ -837,8 +837,11 @@
       <p class="calc-label">Savings Estimator</p>
       <div class="calc-input-wrap">
         <span class="calc-input-label">Full-time employees</span>
-        <input type="number" class="calc-input" id="empInput" value="250" min="100" max="2000">
-        <input type="range" class="calc-slider" id="empSlider" min="100" max="2000" value="250">
+        <input type="number" class="calc-input" id="empInput" value="250" min="100" max="50000"
+          oninput="var v=Math.max(100,Math.min(50000,parseInt(this.value)||100));document.getElementById('empSlider').value=v;var a=v*623;document.getElementById('savingsNum').textContent='$'+a.toLocaleString();document.getElementById('perPaycheck').textContent='~$'+Math.round(a/26).toLocaleString();var pct=((v-100)/(50000-100))*100;document.getElementById('empSlider').style.background='linear-gradient(90deg,#C9A84C '+pct+'%,rgba(255,255,255,0.1) '+pct+'%)';">
+        <input type="range" class="calc-slider" id="empSlider" min="100" max="50000" value="250"
+          oninput="var v=parseInt(this.value);document.getElementById('empInput').value=v;var a=v*623;document.getElementById('savingsNum').textContent='$'+a.toLocaleString();document.getElementById('perPaycheck').textContent='~$'+Math.round(a/26).toLocaleString();var pct=((v-100)/(50000-100))*100;this.style.background='linear-gradient(90deg,#C9A84C '+pct+'%,rgba(255,255,255,0.1) '+pct+'%)';"
+          style="background: linear-gradient(90deg,#C9A84C 8%,rgba(255,255,255,0.1) 8%)">
       </div>
       <div class="calc-result">
         <div class="calc-result-label">Estimated Annual Savings</div>
@@ -996,39 +999,6 @@
 </footer>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  // ── CALCULATOR LOGIC ────────────────────────────────────────
-  const SAVINGS_PER_EMP = 623;
-  const empInput  = document.getElementById('empInput');
-  const empSlider = document.getElementById('empSlider');
-  const savingsEl = document.getElementById('savingsNum');
-  const perPayEl  = document.getElementById('perPaycheck');
-
-  function updateCalc(val) {
-    val = Math.max(100, Math.min(2000, parseInt(val) || 100));
-    const annual = val * SAVINGS_PER_EMP;
-    const biweekly = Math.round(annual / 26);
-    savingsEl.textContent = '$' + annual.toLocaleString();
-    perPayEl.textContent  = '~$' + biweekly.toLocaleString();
-
-    // Update slider gradient
-    const pct = ((val - 100) / (2000 - 100)) * 100;
-    empSlider.style.background = `linear-gradient(90deg, var(--gold) ${pct}%, rgba(255,255,255,0.1) ${pct}%)`;
-  }
-
-  empInput.addEventListener('input', e => {
-    empSlider.value = e.target.value;
-    updateCalc(e.target.value);
-  });
-
-  empSlider.addEventListener('input', e => {
-    empInput.value = e.target.value;
-    updateCalc(e.target.value);
-  });
-
-  // Init
-  updateCalc(250);
-
   // ── SCROLL REVEAL ───────────────────────────────────────────
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry, i) => {
-    
