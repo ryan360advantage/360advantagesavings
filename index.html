@@ -857,10 +857,10 @@ s.parentNode.insertBefore(b, s);})(window.lintrk);
       <p class="calc-label">Savings Estimator</p>
       <div class="calc-input-wrap">
         <span class="calc-input-label">Full-time employees</span>
-        <input type="number" class="calc-input" id="empInput" value="250" min="100" max="50000"
-          oninput="var v=Math.max(100,Math.min(50000,parseInt(this.value)||100));document.getElementById('empSlider').value=v;var a=v*623;document.getElementById('savingsNum').textContent='$'+a.toLocaleString();document.getElementById('perPaycheck').textContent='~$'+Math.round(a/26).toLocaleString();var pct=((v-100)/(50000-100))*100;document.getElementById('empSlider').style.background='linear-gradient(90deg,#C9A84C '+pct+'%,rgba(255,255,255,0.1) '+pct+'%)';">
-        <input type="range" class="calc-slider" id="empSlider" min="100" max="50000" value="250"
-          oninput="var v=parseInt(this.value);document.getElementById('empInput').value=v;var a=v*623;document.getElementById('savingsNum').textContent='$'+a.toLocaleString();document.getElementById('perPaycheck').textContent='~$'+Math.round(a/26).toLocaleString();var pct=((v-100)/(50000-100))*100;this.style.background='linear-gradient(90deg,#C9A84C '+pct+'%,rgba(255,255,255,0.1) '+pct+'%)';"
+        <input type="number" class="calc-input" id="empInput" value="250" min="100" max="300000"
+          oninput="var v=Math.max(100,Math.min(300000,parseInt(this.value)||100));document.getElementById('empSlider').value=v;var a=v*623;document.getElementById('savingsNum').textContent='$'+a.toLocaleString();document.getElementById('perPaycheck').textContent='~$'+Math.round(a/26).toLocaleString();var pct=((v-100)/(300000-100))*100;document.getElementById('empSlider').style.background='linear-gradient(90deg,#C9A84C '+pct+'%,rgba(255,255,255,0.1) '+pct+'%)';">
+        <input type="range" class="calc-slider" id="empSlider" min="100" max="300000" value="250"
+          oninput="var v=parseInt(this.value);document.getElementById('empInput').value=v;var a=v*623;document.getElementById('savingsNum').textContent='$'+a.toLocaleString();document.getElementById('perPaycheck').textContent='~$'+Math.round(a/26).toLocaleString();var pct=((v-100)/(300000-100))*100;this.style.background='linear-gradient(90deg,#C9A84C '+pct+'%,rgba(255,255,255,0.1) '+pct+'%)';"
           style="background: linear-gradient(90deg,#C9A84C 8%,rgba(255,255,255,0.1) 8%)">
       </div>
       <div class="calc-result">
